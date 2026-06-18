@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { dashboardApi, employeesApi } from '@/api/endpoints';
-import { BarChart, LineChart } from '@/components/charts/Charts';
+import { LineChart } from '@/components/charts/Charts';
 import { PageSkeleton } from '@/components/feedback/skeletons';
 import { ChartCard, StatCard } from '@/components/layout/AppLayout';
 import { HEATMAP_COLORS } from '@/data/logData';
