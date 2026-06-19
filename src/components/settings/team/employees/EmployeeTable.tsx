@@ -26,7 +26,10 @@ export function EmployeeTable({
         <thead>
           <tr className="border-b border-[#e2e8f0] text-left text-[11px] font-semibold uppercase tracking-wider text-[#94a3b8]">
             <th className="px-5 py-3">Employee</th>
-            <th className="px-5 py-3">Slack ID</th>
+            <th className="px-5 py-3">Email</th>
+            <th className="px-5 py-3">Level</th>
+            <th className="px-5 py-3">Tech Stack</th>
+            <th className="px-5 py-3">GitHub</th>
             <th className="px-5 py-3">Projects</th>
             <th className="px-5 py-3">Status</th>
             <th className="px-5 py-3 text-right">Actions</th>
@@ -43,13 +46,53 @@ export function EmployeeTable({
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <EmployeeAvatar name={emp.name} />
-                    <span className="font-semibold text-[#0f172a]">{emp.name}</span>
+                    <div>
+                      <span className="font-semibold text-[#0f172a]">{emp.name}</span>
+                      {emp.phone && (
+                        <p className="mt-0.5 text-xs text-[#94a3b8]">{emp.phone}</p>
+                      )}
+                    </div>
                   </div>
                 </td>
                 <td className="px-5 py-4">
-                  <code className="rounded-md bg-[#f1f5f9] px-2 py-0.5 font-mono text-xs text-[#64748b]">
-                    {emp.slackUserId || '—'}
-                  </code>
+                  <span className="text-[#64748b]">{emp.email || '—'}</span>
+                </td>
+                <td className="px-5 py-4">
+                  {emp.experienceLevel ? (
+                    <Badge variant="muted">{emp.experienceLevel}</Badge>
+                  ) : (
+                    <span className="text-xs text-[#cbd5e1]">—</span>
+                  )}
+                </td>
+                <td className="px-5 py-4">
+                  {emp.techStack.length > 0 ? (
+                    <div className="flex max-w-[180px] flex-wrap gap-1">
+                      {emp.techStack.slice(0, 3).map((tech) => (
+                        <Badge key={tech} variant="muted">
+                          {tech}
+                        </Badge>
+                      ))}
+                      {emp.techStack.length > 3 && (
+                        <Badge variant="muted">+{emp.techStack.length - 3}</Badge>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-[#cbd5e1]">—</span>
+                  )}
+                </td>
+                <td className="px-5 py-4">
+                  {emp.githubUsername ? (
+                    <a
+                      href={`https://github.com/${emp.githubUsername}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono text-xs text-[#3b82f6] hover:underline"
+                    >
+                      @{emp.githubUsername}
+                    </a>
+                  ) : (
+                    <span className="text-xs text-[#cbd5e1]">—</span>
+                  )}
                 </td>
                 <td className="px-5 py-4">
                   {assigned.length > 0 ? (

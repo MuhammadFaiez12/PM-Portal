@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, BarChart3, CheckCircle2, ClipboardList } from 'lucide-react';
 import { employeesApi, projectsApi, reportsApi } from '@/api/endpoints';
 import { LoadingButton } from '@/components/feedback/LoadingButton';
+import { EmployeeSelect } from '@/components/settings/team/EmployeeSelect';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -33,6 +34,7 @@ export default function SubmitPage() {
   const [progress, setProgress] = useState(50);
   const [errMsg, setErrMsg] = useState('');
   const [allowUpdate, setAllowUpdate] = useState(false);
+  const [slackNotified, setSlackNotified] = useState(false);
 
   const { data: employees = [] } = useQuery({
     queryKey: ['employees', 'active'],
@@ -52,7 +54,10 @@ export default function SubmitPage() {
 
   const submitMutation = useMutation({
     mutationFn: reportsApi.submit,
-    onSuccess: () => setScreen('success'),
+    onSuccess: (data) => {
+      setSlackNotified(data.slackNotified);
+      setScreen('success');
+    },
     onError: () => setErrMsg('Submission failed. Please try again.'),
   });
 
@@ -70,6 +75,7 @@ export default function SubmitPage() {
     setProgress(50);
     setErrMsg('');
     setAllowUpdate(false);
+    setSlackNotified(false);
     setDate(getPKTDate());
   };
 
@@ -129,7 +135,9 @@ export default function SubmitPage() {
           <div className="mb-7 flex items-center gap-2.5 rounded-[10px] border border-[#bbf7d0] bg-[#f0fdf4] p-3.5 text-left">
             <BarChart3 className="h-4 w-4 shrink-0 text-[#15803d]" />
             <p className="m-0 text-[13px] font-medium text-[#15803d]">
-              Your PM has been notified via Slack.
+              {slackNotified
+                ? 'Your PM has been notified via Slack.'
+                : 'Your report has been saved to the dashboard.'}
             </p>
           </div>
           <LoadingButton className="w-full" onClick={resetForm}>
@@ -202,18 +210,13 @@ export default function SubmitPage() {
       <div className="mx-auto max-w-[600px] space-y-3.5">
         <Card title={FORM_SECTIONS[0].title} accent={FORM_SECTIONS[0].accent}>
           <Field label="Employee Name" required>
-            <Select value={empName} onValueChange={setEmpName}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select your name..." />
-              </SelectTrigger>
-              <SelectContent>
-                {employees.map((e) => (
-                  <SelectItem key={e.id} value={e.name}>
-                    {e.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <EmployeeSelect
+              employees={employees}
+              value={empName}
+              onValueChange={setEmpName}
+              valueKey="name"
+              placeholder="Select your name..."
+            />
           </Field>
           <Field label="Date" required>
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />

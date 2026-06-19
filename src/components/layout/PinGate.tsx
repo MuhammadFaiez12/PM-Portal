@@ -3,7 +3,6 @@ import { BarChart3 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-import { DEFAULT_PIN } from '@/data/logData';
 
 export function PinGate({
   title,
@@ -51,9 +50,6 @@ export function PinGate({
         <Button className="w-full" onClick={handleSubmit} loading={loading}>
           Sign In
         </Button>
-        <p className="mt-5 text-xs text-[#cbd5e1]">
-          Default PIN: <strong className="text-[#94a3b8]">{DEFAULT_PIN}</strong>
-        </p>
       </div>
     </div>
   );

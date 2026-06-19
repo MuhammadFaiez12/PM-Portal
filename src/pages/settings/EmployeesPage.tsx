@@ -12,30 +12,24 @@ export default function EmployeesPage() {
   const { saveMsg, toast } = useSettingsToast();
   const [tab, setTab] = useState('employees');
   const { employees, projects, isLoading, invalidate } = useTeamQueries();
-
-  const activeCount = employees.filter((e) => e.isActive).length;
-  const activeProjects = projects.filter((p) => p.isActive).length;
-
   if (isLoading) return <Skeleton className="h-64 w-full" />;
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {saveMsg && (
         <div className="rounded-xl border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-center text-sm font-medium text-[#15803d]">
           {saveMsg}
         </div>
       )}
 
-      <TeamPageHeader activeEmployees={activeCount} activeProjects={activeProjects} />
-
+      <TeamPageHeader /> 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="w-full sm:w-auto">
-          <TabsTrigger value="employees" className="group flex-1 sm:flex-none">
+          <TabsTrigger value="employees" className="group cursor-pointer flex-1 sm:flex-none">
             <Users className="h-4 w-4" />
             Employees
             <TabCount count={employees.length} variant="employees" />
           </TabsTrigger>
-          <TabsTrigger value="projects" className="group flex-1 sm:flex-none">
+          <TabsTrigger value="projects" className="group cursor-pointer flex-1 sm:flex-none">
             <FolderKanban className="h-4 w-4" />
             Projects
             <TabCount count={projects.length} variant="projects" />

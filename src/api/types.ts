@@ -1,14 +1,29 @@
 export type Employee = {
   id: string;
   name: string;
+  email: string;
+  phone: string;
+  techStack: string[];
+  experienceLevel: string;
+  githubUsername: string;
   slackUserId: string;
   isActive: boolean;
+};
+
+export type RegisterEmployeePayload = {
+  name: string;
+  email: string;
+  phone: string;
+  techStack: string[];
+  experienceLevel: string;
+  githubUsername: string;
 };
 
 export type Project = {
   id: string;
   name: string;
   description: string;
+  startDate: string;
   employeeIds: string[];
   isActive: boolean;
 };

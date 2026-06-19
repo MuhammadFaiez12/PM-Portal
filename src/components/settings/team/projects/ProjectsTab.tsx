@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { projectsApi } from '@/api/endpoints';
 import type { Project } from '@/api/types';
 import { Button } from '@/components/ui/button';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 import { DataPanel } from '../DataPanel';
 import { EmptyState } from '../EmptyState';
 import type { TeamTabProps } from '../types';
@@ -14,6 +15,9 @@ export function ProjectsTab({ employees, projects, toast, onInvalidate }: TeamTa
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
+  const [deactivateTarget, setDeactivateTarget] = useState<{ id: string; name: string } | null>(
+    null,
+  );
 
   const activeEmployees = useMemo(
     () => employees.filter((e) => e.isActive),
@@ -23,6 +27,7 @@ export function ProjectsTab({ employees, projects, toast, onInvalidate }: TeamTa
   const deactivateMut = useMutation({
     mutationFn: projectsApi.deactivate,
     onSuccess: () => {
+      setDeactivateTarget(null);
       onInvalidate();
       toast('Project deactivated!');
     },
@@ -64,9 +69,7 @@ export function ProjectsTab({ employees, projects, toast, onInvalidate }: TeamTa
             projects={filtered}
             employees={employees}
             onEdit={setEditProject}
-            onDeactivate={(id, name) => {
-              if (confirm(`Deactivate ${name}?`)) deactivateMut.mutate(id);
-            }}
+            onDeactivate={(id, name) => setDeactivateTarget({ id, name })}
             isDeactivating={deactivateMut.isPending}
           />
         )}
@@ -86,6 +89,16 @@ export function ProjectsTab({ employees, projects, toast, onInvalidate }: TeamTa
         onClose={() => setEditProject(null)}
         onInvalidate={onInvalidate}
         toast={toast}
+      />
+
+      <ConfirmModal
+        open={!!deactivateTarget}
+        onOpenChange={(open) => !open && setDeactivateTarget(null)}
+        title={`Deactivate ${deactivateTarget?.name}?`}
+        description="This project will no longer be available in daily report submissions."
+        confirmLabel="Deactivate"
+        onConfirm={() => deactivateTarget && deactivateMut.mutate(deactivateTarget.id)}
+        isLoading={deactivateMut.isPending}
       />
     </>
   );

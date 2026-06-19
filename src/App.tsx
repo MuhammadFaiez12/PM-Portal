@@ -4,10 +4,12 @@ import { AuthProvider } from '@/context/AuthContext';
 import { loadStoredTokens } from '@/api/client';
 import { ProtectedLayout } from '@/components/layout/ProtectedLayout';
 import SubmitPage from '@/pages/SubmitPage';
+import JoinPage from '@/pages/JoinPage';
 import OverviewPage from '@/pages/dashboard/OverviewPage';
 import EmployeePerformancePage from '@/pages/dashboard/EmployeePerformancePage';
 import MonthlyAnalysisPage from '@/pages/dashboard/MonthlyAnalysisPage';
 import TeamComparisonPage from '@/pages/dashboard/TeamComparisonPage';
+import FormsPage from '@/pages/settings/FormsPage';
 import EmployeesPage from '@/pages/settings/EmployeesPage';
 import SlackConfigPage from '@/pages/settings/SlackConfigPage';
 import SystemSettingsPage from '@/pages/settings/SystemSettingsPage';
@@ -32,6 +34,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Navigate to="/submit" replace />} />
             <Route path="/submit" element={<SubmitPage />} />
+            <Route path="/join" element={<JoinPage />} />
 
             <Route element={<ProtectedLayout />}>
               <Route path="/dashboard" element={<Navigate to="/dashboard/overview" replace />} />
@@ -41,6 +44,7 @@ export default function App() {
               <Route path="/dashboard/team" element={<TeamComparisonPage />} />
 
               <Route path="/settings" element={<Navigate to="/settings/employees" replace />} />
+              <Route path="/settings/forms" element={<FormsPage />} />
               <Route path="/settings/employees" element={<EmployeesPage />} />
               <Route path="/settings/slack" element={<SlackConfigPage />} />
               <Route path="/settings/system" element={<SystemSettingsPage />} />

@@ -7,6 +7,7 @@ import type {
   EmployeeStats,
   MonthlySummaryRow,
   Project,
+  RegisterEmployeePayload,
   Report,
   TeamMember,
 } from './types';
@@ -23,11 +24,17 @@ export const employeesApi = {
     api.get<Employee[]>('/employees').then((r) => r.data),
   listAll: () =>
     api.get<Employee[]>('/employees/all').then((r) => r.data),
-  create: (data: { name: string; slackUserId?: string }) =>
+  register: (data: RegisterEmployeePayload) =>
+    api.post<Employee>('/employees/register', data).then((r) => r.data),
+  create: (data: Partial<RegisterEmployeePayload> & { name: string; slackUserId?: string }) =>
     api.post<Employee>('/employees', data).then((r) => r.data),
   update: (
     id: string,
-    data: { name: string; slackUserId?: string; isActive?: boolean },
+    data: Partial<RegisterEmployeePayload> & {
+      name: string;
+      slackUserId?: string;
+      isActive?: boolean;
+    },
   ) => api.put(`/employees/${id}`, data).then((r) => r.data),
   deactivate: (id: string) =>
     api.delete(`/employees/${id}`).then((r) => r.data),
@@ -45,6 +52,7 @@ export const projectsApi = {
   create: (data: {
     name: string;
     description?: string;
+    startDate?: string;
     employeeIds?: string[];
   }) => api.post<Project>('/projects', data).then((r) => r.data),
   update: (
@@ -52,6 +60,7 @@ export const projectsApi = {
     data: {
       name: string;
       description?: string;
+      startDate?: string;
       employeeIds?: string[];
       isActive?: boolean;
     },
@@ -62,7 +71,12 @@ export const projectsApi = {
 
 export const reportsApi = {
   submit: (data: Record<string, unknown>) =>
-    api.post<{ success: boolean; action: string }>('/reports', data).then((r) => r.data),
+    api
+      .post<{ success: boolean; action: string; slackNotified: boolean }>(
+        '/reports',
+        data,
+      )
+      .then((r) => r.data),
   checkDuplicate: (employee: string, date: string) =>
     api
       .get<Report[]>('/reports/check', { params: { employee, date } })

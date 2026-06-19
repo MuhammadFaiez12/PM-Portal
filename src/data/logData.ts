@@ -12,6 +12,7 @@ export const ANALYTICS_NAV: NavItem[] = [
 ];
 
 export const ADMIN_NAV: NavItem[] = [
+  { path: '/settings/forms', label: 'Forms', icon: 'FileText' },
   { path: '/settings/employees', label: 'Employees', icon: 'Users' },
   { path: '/settings/slack', label: 'Slack Config', icon: 'MessageSquare' },
   { path: '/settings/system', label: 'System', icon: 'Settings' },
@@ -23,6 +24,7 @@ export const PAGE_TITLES: Record<string, string> = {
   '/dashboard/employee': 'Employee Performance',
   '/dashboard/monthly': 'Monthly Analysis',
   '/dashboard/team': 'Team Comparison',
+  '/settings/forms': 'Forms',
   '/settings/employees': 'Employees',
   '/settings/slack': 'Slack Config',
   '/settings/system': 'System Settings',
@@ -60,15 +62,17 @@ export const MONTH_NAMES = [
   'December',
 ];
 
-export const YEAR_OPTIONS = [2024, 2025, 2026];
+const currentYear = new Date().getFullYear();
+export const YEAR_OPTIONS = Array.from(
+  { length: 5 },
+  (_, i) => currentYear - 2 + i,
+);
 
 export const FORM_SECTIONS = [
   { title: 'Basic Info', accent: '#3b82f6' },
   { title: 'Work Details', accent: '#6366f1' },
   { title: 'Planning & Wellbeing', accent: '#10b981' },
 ] as const;
-
-export const DEFAULT_PIN = '2024';
 
 export const HEATMAP_COLORS = {
   submitted: '#10b981',

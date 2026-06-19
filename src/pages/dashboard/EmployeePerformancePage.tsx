@@ -4,6 +4,7 @@ import { dashboardApi, employeesApi } from '@/api/endpoints';
 import { BarChart, LineChart } from '@/components/charts/Charts';
 import { PageSkeleton } from '@/components/feedback/skeletons';
 import { ChartCard, StatCard } from '@/components/layout/AppLayout';
+import { EmployeeSelect } from '@/components/settings/team/EmployeeSelect';
 
 export default function EmployeePerformancePage() {
   const [selEmp, setSelEmp] = useState('');
@@ -42,17 +43,13 @@ export default function EmployeePerformancePage() {
     <div>
       <div className="mb-5 flex items-center gap-3">
         <label className="text-sm font-medium">Select Employee:</label>
-        <select
+        <EmployeeSelect
+          employees={employees}
           value={selectedEmp}
-          onChange={(e) => setSelEmp(e.target.value)}
-          className="rounded-lg border border-[#e2e8f0] px-3 py-2 text-sm"
-        >
-          {employees.map((e) => (
-            <option key={e.id} value={e.name}>
-              {e.name}
-            </option>
-          ))}
-        </select>
+          onValueChange={setSelEmp}
+          valueKey="name"
+          className="w-[220px]"
+        />
       </div>
 
       <div className="mb-5 grid grid-cols-4 gap-4">

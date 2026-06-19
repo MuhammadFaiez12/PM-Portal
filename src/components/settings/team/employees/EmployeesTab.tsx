@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { employeesApi } from '@/api/endpoints';
 import type { Employee } from '@/api/types';
 import { Button } from '@/components/ui/button';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
 import { DataPanel } from '../DataPanel';
 import { EmptyState } from '../EmptyState';
 import type { TeamTabProps } from '../types';
@@ -15,10 +16,14 @@ export function EmployeesTab({ employees, projects, toast, onInvalidate }: TeamT
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
   const [editEmployee, setEditEmployee] = useState<Employee | null>(null);
+  const [deactivateTarget, setDeactivateTarget] = useState<{ id: string; name: string } | null>(
+    null,
+  );
 
   const deactivateMut = useMutation({
     mutationFn: employeesApi.deactivate,
     onSuccess: () => {
+      setDeactivateTarget(null);
       onInvalidate();
       toast('Employee deactivated!');
     },
@@ -29,9 +34,14 @@ export function EmployeesTab({ employees, projects, toast, onInvalidate }: TeamT
     [employees, projects],
   );
 
-  const filtered = employees.filter((e) =>
-    e.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filtered = employees.filter((e) => {
+    const q = search.toLowerCase();
+    return (
+      e.name.toLowerCase().includes(q) ||
+      e.email.toLowerCase().includes(q) ||
+      e.githubUsername.toLowerCase().includes(q)
+    );
+  });
 
   const assignedForEdit = editEmployee
     ? employeeProjects.get(editEmployee.id) ?? []
@@ -50,7 +60,7 @@ export function EmployeesTab({ employees, projects, toast, onInvalidate }: TeamT
         }
         search={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search employees..."
+        searchPlaceholder="Search by name, email, or GitHub..."
       >
         {filtered.length === 0 ? (
           <EmptyState
@@ -67,9 +77,7 @@ export function EmployeesTab({ employees, projects, toast, onInvalidate }: TeamT
             employees={filtered}
             employeeProjects={employeeProjects}
             onEdit={setEditEmployee}
-            onDeactivate={(id, name) => {
-              if (confirm(`Deactivate ${name}?`)) deactivateMut.mutate(id);
-            }}
+            onDeactivate={(id, name) => setDeactivateTarget({ id, name })}
             isDeactivating={deactivateMut.isPending}
           />
         )}
@@ -88,6 +96,16 @@ export function EmployeesTab({ employees, projects, toast, onInvalidate }: TeamT
         onClose={() => setEditEmployee(null)}
         onInvalidate={onInvalidate}
         toast={toast}
+      />
+
+      <ConfirmModal
+        open={!!deactivateTarget}
+        onOpenChange={(open) => !open && setDeactivateTarget(null)}
+        title={`Deactivate ${deactivateTarget?.name}?`}
+        description="This employee will no longer appear in the daily report submission form."
+        confirmLabel="Deactivate"
+        onConfirm={() => deactivateTarget && deactivateMut.mutate(deactivateTarget.id)}
+        isLoading={deactivateMut.isPending}
       />
     </>
   );

@@ -5,22 +5,26 @@ import { projectsApi } from '@/api/endpoints';
 import type { Employee, Project } from '@/api/types';
 import { LoadingButton } from '@/components/feedback/LoadingButton';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
-import { EmployeeCheckboxList } from '../EmployeeCheckboxList';
+import { Textarea } from '@/components/ui/textarea';
+import { EmployeeMultiSelect } from '../EmployeeMultiSelect';
 import { FormField } from '../FormField';
 import { FormModal } from '../FormModal';
 import { StatusSelect } from '../StatusSelect';
 import type { InvalidateFn, ToastFn } from '../types';
-import { toggleIdInList } from '../utils';
+import { getPKTDate } from '@/lib/utils';
 
 type ProjectFormFieldsProps = {
   name: string;
   description: string;
+  startDate: string;
   employeeIds: string[];
   activeEmployees: Employee[];
   onNameChange: (v: string) => void;
   onDescriptionChange: (v: string) => void;
-  onToggleEmployee: (id: string) => void;
+  onStartDateChange: (v: string) => void;
+  onEmployeeIdsChange: (ids: string[]) => void;
   nameRequired?: boolean;
   autoFocus?: boolean;
 };
@@ -28,11 +32,13 @@ type ProjectFormFieldsProps = {
 function ProjectFormFields({
   name,
   description,
+  startDate,
   employeeIds,
   activeEmployees,
   onNameChange,
   onDescriptionChange,
-  onToggleEmployee,
+  onStartDateChange,
+  onEmployeeIdsChange,
   nameRequired,
   autoFocus,
 }: ProjectFormFieldsProps) {
@@ -40,27 +46,30 @@ function ProjectFormFields({
     <>
       <FormField label="Project Name" required={nameRequired}>
         <Input
-          placeholder="e.g. Client Portal"
+          placeholder="e.g. Website Redesign"
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           autoFocus={autoFocus}
         />
       </FormField>
+      <FormField label="Start Date">
+        <DatePicker value={startDate} onChange={onStartDateChange} placeholder="Select start date" />
+      </FormField>
       <FormField label="Description">
-        <Input
+        <Textarea
           placeholder="Brief description (optional)"
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
+          rows={3}
         />
       </FormField>
       <FormField
         label="Team Members"
-        hint="Leave empty to show this project to all employees."
-      >
-        <EmployeeCheckboxList
+        hint="Leave empty to show this project to all employees.">
+        <EmployeeMultiSelect
           employees={activeEmployees}
           selectedIds={employeeIds}
-          onToggle={onToggleEmployee}
+          onChange={onEmployeeIdsChange}
         />
       </FormField>
     </>
@@ -84,14 +93,16 @@ export function CreateProjectModal({
 }: CreateProjectModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [startDate, setStartDate] = useState(getPKTDate);
   const [employeeIds, setEmployeeIds] = useState<string[]>([]);
 
   const createMut = useMutation({
-    mutationFn: () => projectsApi.create({ name, description, employeeIds }),
+    mutationFn: () => projectsApi.create({ name, description, startDate, employeeIds }),
     onSuccess: () => {
       onInvalidate();
       setName('');
       setDescription('');
+      setStartDate(getPKTDate());
       setEmployeeIds([]);
       onOpenChange(false);
       toast('Project created successfully!');
@@ -102,6 +113,7 @@ export function CreateProjectModal({
     if (!next) {
       setName('');
       setDescription('');
+      setStartDate(getPKTDate());
       setEmployeeIds([]);
     }
     onOpenChange(next);
@@ -134,11 +146,13 @@ export function CreateProjectModal({
       <ProjectFormFields
         name={name}
         description={description}
+        startDate={startDate}
         employeeIds={employeeIds}
         activeEmployees={activeEmployees}
         onNameChange={setName}
         onDescriptionChange={setDescription}
-        onToggleEmployee={(id) => setEmployeeIds((prev) => toggleIdInList(prev, id))}
+        onStartDateChange={setStartDate}
+        onEmployeeIdsChange={setEmployeeIds}
         nameRequired
         autoFocus
       />
@@ -163,6 +177,7 @@ export function EditProjectModal({
 }: EditProjectModalProps) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [startDate, setStartDate] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [employeeIds, setEmployeeIds] = useState<string[]>([]);
 
@@ -170,6 +185,7 @@ export function EditProjectModal({
     if (project) {
       setName(project.name);
       setDescription(project.description);
+      setStartDate(project.startDate);
       setIsActive(project.isActive);
       setEmployeeIds([...project.employeeIds]);
     }
@@ -180,6 +196,7 @@ export function EditProjectModal({
       projectsApi.update(project!.id, {
         name,
         description,
+        startDate,
         employeeIds,
         isActive,
       }),
@@ -213,28 +230,19 @@ export function EditProjectModal({
         </>
       }
     >
-      <FormField label="Project Name">
-        <Input value={name} onChange={(e) => setName(e.target.value)} />
-      </FormField>
-      <FormField label="Description">
-        <Input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Brief description"
-        />
-      </FormField>
+      <ProjectFormFields
+        name={name}
+        description={description}
+        startDate={startDate}
+        employeeIds={employeeIds}
+        activeEmployees={activeEmployees}
+        onNameChange={setName}
+        onDescriptionChange={setDescription}
+        onStartDateChange={setStartDate}
+        onEmployeeIdsChange={setEmployeeIds}
+      />
       <FormField label="Status">
         <StatusSelect value={isActive} onChange={setIsActive} />
-      </FormField>
-      <FormField
-        label="Team Members"
-        hint="Leave empty to show this project to all employees."
-      >
-        <EmployeeCheckboxList
-          employees={activeEmployees}
-          selectedIds={employeeIds}
-          onToggle={(id) => setEmployeeIds((prev) => toggleIdInList(prev, id))}
-        />
       </FormField>
     </FormModal>
   );

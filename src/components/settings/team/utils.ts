@@ -22,10 +22,6 @@ export function buildEmployeeProjectMap(employees: Employee[], projects: Project
   return map;
 }
 
-export function toggleIdInList(ids: string[], id: string) {
-  return ids.includes(id) ? ids.filter((eid) => eid !== id) : [...ids, id];
-}
-
 export function getEmployeeName(employees: Employee[], id: string) {
   return employees.find((e) => e.id === id)?.name ?? 'Unknown';
 }

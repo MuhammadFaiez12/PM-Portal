@@ -20,6 +20,15 @@ export function formatTodayLabel(dateStr?: string): string {
   });
 }
 
+export function formatShortDate(dateStr: string): string {
+  if (!dateStr) return '—';
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
 export function getRecentWeekdays(n: number) {
   const out: { date: string; label: string; shortLabel: string }[] = [];
   const today = new Date();

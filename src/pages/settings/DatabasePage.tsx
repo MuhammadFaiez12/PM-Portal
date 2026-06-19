@@ -1,15 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { RefreshCw } from 'lucide-react';
+import { useState } from 'react';
 import { reportsApi } from '@/api/endpoints';
 import type { Report } from '@/api/types';
 import { Skeleton } from '@/components/feedback/skeletons';
-import { LoadingButton } from '@/components/feedback/LoadingButton';
 import { useSettingsToast } from '@/components/layout/ProtectedLayout';
 import { Button } from '@/components/ui/button';
+import { ConfirmModal } from '@/components/ui/confirm-modal';
+import { TableRowActionsMenu } from '@/components/ui/table-row-actions-menu';
 
 export default function DatabasePage() {
   const { saveMsg, toast } = useSettingsToast();
   const qc = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<Report | null>(null);
   const { data: reports = [], isLoading, refetch } = useQuery({
     queryKey: ['reports', 'all'],
     queryFn: () => reportsApi.list(),
@@ -18,6 +21,7 @@ export default function DatabasePage() {
   const deleteMut = useMutation({
     mutationFn: reportsApi.delete,
     onSuccess: () => {
+      setDeleteTarget(null);
       qc.invalidateQueries({ queryKey: ['reports'] });
       toast('Report deleted!');
     },
@@ -45,7 +49,10 @@ export default function DatabasePage() {
           <thead className="border-b border-[#e2e8f0] bg-[#f8fafc]">
             <tr>
               {['Employee', 'Date', 'Project', 'Hours', 'Mood', 'Progress', 'Actions'].map((h) => (
-                <th key={h} className="px-3 py-2 text-left font-semibold text-[#64748b]">
+                <th
+                  key={h}
+                  className={`px-3 py-2 font-semibold text-[#64748b] ${h === 'Actions' ? 'text-right' : 'text-left'}`}
+                >
                   {h}
                 </th>
               ))}
@@ -61,24 +68,39 @@ export default function DatabasePage() {
                 <td className="px-3 py-2">{r.mood}/5</td>
                 <td className="px-3 py-2">{r.progressPercent}%</td>
                 <td className="px-3 py-2">
-                  <LoadingButton
-                    size="sm"
-                    variant="destructive"
-                    loading={deleteMut.isPending}
-                    onClick={() => {
-                      if (confirm('Delete this report?')) {
-                        deleteMut.mutate(r.id);
-                      }
-                    }}
-                  >
-                    Delete
-                  </LoadingButton>
+                  <div className="flex justify-end">
+                    <TableRowActionsMenu
+                      label="Open report actions"
+                      actions={[
+                        {
+                          label: 'Delete',
+                          onClick: () => setDeleteTarget(r),
+                          variant: 'destructive',
+                          loading: deleteMut.isPending && deleteTarget?.id === r.id,
+                        },
+                      ]}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        title="Delete this report?"
+        description={
+          deleteTarget
+            ? `${deleteTarget.employeeName} · ${deleteTarget.date} · ${deleteTarget.projectTask}`
+            : undefined
+        }
+        confirmLabel="Delete"
+        onConfirm={() => deleteTarget && deleteMut.mutate(deleteTarget.id)}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   );
 }

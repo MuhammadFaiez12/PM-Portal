@@ -46,23 +46,27 @@ export function FormModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md gap-0 p-0 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#e2e8f0] scrollbar-track-[#fafbfc]">
-        <div className={cn('border-b border-[#e2e8f0] px-6 py-5', styles.header)}>
-          <DialogHeader className="mb-0">
-            <div
-              className={cn(
-                'mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-sm ring-1',
-                styles.ring,
-              )}
-            >
-              <Icon className={cn('h-5 w-5', styles.icon)} />
+      <DialogContent className="max-w-md gap-0 p-0 max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-[#e2e8f0] scrollbar-track-[#fafbfc] [&>button]:right-3 [&>button]:top-3">
+        <div className={cn('border-b border-[#e2e8f0] px-4 py-3', styles.header)}>
+          <DialogHeader className="mb-0 gap-0">
+            <div className="flex items-start gap-3 pr-6">
+              <div
+                className={cn(
+                  'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1',
+                  styles.ring,
+                )}
+              >
+                <Icon className={cn('h-4 w-4', styles.icon)} />
+              </div>
+              <div className="min-w-0 flex-1 space-y-0.5 pt-0.5">
+                <DialogTitle className="text-base leading-tight">{title}</DialogTitle>
+                <DialogDescription className="text-xs leading-snug">{description}</DialogDescription>
+              </div>
             </div>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
         </div>
-        <div className="space-y-4 px-6 py-5">{children}</div>
-        <DialogFooter className="border-t border-[#e2e8f0] bg-[#fafbfc] px-6 py-4">
+        <div className="space-y-3 px-4 py-3">{children}</div>
+        <DialogFooter className="mt-0 border-t border-[#e2e8f0] bg-[#fafbfc] px-4 py-3">
           {footer}
         </DialogFooter>
       </DialogContent>

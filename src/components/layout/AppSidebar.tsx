@@ -16,6 +16,7 @@ import {
 import { ADMIN_NAV, ANALYTICS_NAV } from '@/data/logData';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import logo from '@/assets/logo1.png';
 const ICON_MAP: Record<string, LucideIcon> = {
   LayoutDashboard,
   UserRound,
@@ -67,14 +68,16 @@ export function AppSidebar() {
 
   return (
     <aside className="flex w-[240px] shrink-0 flex-col overflow-hidden bg-[#0f172a]">
-      <div className="border-b border-[#1e293b] p-5">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-[#3b82f6] to-[#6366f1]">
-            <BarChart3 className="h-[18px] w-[18px] text-white" strokeWidth={2.5} />
-          </div>
-          <div>
-            <div className="text-[13px] font-bold leading-tight text-white">Work Reports</div>
-            <div className="text-[11px] text-[#475569]">PM Analytics</div>
+      <div className="border-b border-[#1e293b] px-4 py-3">
+        <div className="flex items-center gap-2.5">
+          <img
+            src={logo}
+            alt="Wanile"
+            className="h-5 w-auto shrink-0 object-contain"
+          />
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-[11px] font-semibold text-white">Work Reports</p>
+            <p className="truncate text-[9px] text-[#64748b]">Analytics</p>
           </div>
         </div>
       </div>
@@ -95,19 +98,11 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-[#1e293b] p-3">
-        <NavLink
-          to="/submit"
-          className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium text-[#64748b] hover:bg-[#1e293b]"
-        >
-          <FileText className="h-4 w-4 shrink-0" strokeWidth={2} />
-          Employee Form
-        </NavLink>
+      <div className="border-t border-[#1e293b] p-3"> 
         <button
           type="button"
           onClick={() => logout()}
-          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium text-[#64748b] hover:bg-[#1e293b]"
-        >
+          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium text-[#64748b] hover:bg-[#1e293b]">
           <LogOut className="h-4 w-4 shrink-0" strokeWidth={2} />
           Sign Out
         </button>

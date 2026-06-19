@@ -4,6 +4,13 @@ import { Download, Sparkles } from 'lucide-react';
 import { aiApi, dashboardApi, reportsApi } from '@/api/endpoints';
 import { Skeleton } from '@/components/feedback/skeletons';
 import { LoadingButton } from '@/components/feedback/LoadingButton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { MOOD_EMOJIS, MONTH_NAMES, YEAR_OPTIONS } from '@/data/logData';
 
 export default function MonthlyAnalysisPage() {
@@ -52,28 +59,36 @@ export default function MonthlyAnalysisPage() {
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-center gap-3">
-        <select
-          value={selMonth}
-          onChange={(e) => setSelMonth(Number(e.target.value))}
-          className="rounded-lg border border-[#e2e8f0] px-3 py-2 text-sm"
+        <Select
+          value={String(selMonth)}
+          onValueChange={(v) => setSelMonth(Number(v))}
         >
-          {MONTH_NAMES.map((m, i) => (
-            <option key={m} value={i}>
-              {m}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selYear}
-          onChange={(e) => setSelYear(Number(e.target.value))}
-          className="rounded-lg border border-[#e2e8f0] px-3 py-2 text-sm"
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            {MONTH_NAMES.map((m, i) => (
+              <SelectItem key={m} value={String(i)}>
+                {m}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={String(selYear)}
+          onValueChange={(v) => setSelYear(Number(v))}
         >
-          {YEAR_OPTIONS.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[120px]">
+            <SelectValue placeholder="Year" />
+          </SelectTrigger>
+          <SelectContent>
+            {YEAR_OPTIONS.map((y) => (
+              <SelectItem key={y} value={String(y)}>
+                {y}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <LoadingButton variant="ai" size="sm" loading={aiMutation.isPending} onClick={() => aiMutation.mutate()}>
           <Sparkles className="mr-1.5 h-3.5 w-3.5" />
           AI Summary
